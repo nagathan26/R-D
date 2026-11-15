@@ -60,7 +60,25 @@ export default function IndiaEngagementSignView({
     setSuccessMessage(null);
     setLoading(true);
 
-    const engagementId = currentEngagement?.engagementId || currentEngagement?._id;
+    let engagementId = currentEngagement?.engagementId || currentEngagement?._id;
+    if (!engagementId) {
+      try {
+        const resp = await prepareEngagement({
+          companyId: company?.companyId || company?._id,
+          assessmentId: assessment?.assessmentId || assessment?._id,
+          feePercentage: 12
+        });
+        if (resp?.data) {
+          setCurrentEngagement(resp.data);
+          engagementId = resp.data.engagementId || resp.data._id;
+        }
+      } catch (prepErr) {
+        setError('Server is still initializing. Please wait a moment and try again: ' + prepErr.message);
+        setLoading(false);
+        return;
+      }
+    }
+
     if (!engagementId) {
       setError('Engagement record could not be found. Please return to Step 1.');
       setLoading(false);
@@ -181,7 +199,7 @@ export default function IndiaEngagementSignView({
               <span className="font-semibold text-emerald-700">{displayIncentives.join(', ')}</span>
             </div>
             <div>
-              <span className="text-slatdemoe-400 block font-medium">Fee Terms</span>
+              <span className="text-slate-400 block font-medium">Fee Terms</span>
               <span className="font-semibold text-slate-900">12% Contingency (+ 18% GST)</span>
             </div>
           </div>
