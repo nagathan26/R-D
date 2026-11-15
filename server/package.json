@@ -1,0 +1,30 @@
+{
+  "name": "rd-tax-incentive-platform-india",
+  "version": "1.0.0",
+  "description": "India R&D Tax Incentive & Government Subsidy Consulting Platform (Income-tax Act 1961, Section 80-IAC, Section 35(2AB), DPIIT, DSIR)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node node_modules/nodemon/bin/nodemon.js src/server.js",
+    "test": "node node_modules/jest/bin/jest.js --runInBand --detectOpenHandles"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5",
+    "nodemailer": "^10.5.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "verbose": true
+  }
+}
