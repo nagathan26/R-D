@@ -4,13 +4,31 @@ const mongoose = require('mongoose');
 const indiaRoutes = require('./routes/india.routes');
 
 const app = express();
+
+// Flexible CORS for Vercel, localhost, and custom domains
 app.use(cors({
-    origin: [
-    'https://r-d-tan.vercel.app'
-  ],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (
+      origin.includes('vercel.app')
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
+
 app.use(express.json());
+
+// Root endpoint so visiting the URL directly shows a clear message
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'India R&D Tax Incentive Platform API Server is Online',
+    health: '/api/health',
+    screener: '/api/v1/india/eligibility/screen'
+  });
+});
 
 // Indian Jurisdiction API Endpoints (v1)
 app.use('/api/v1/india', indiaRoutes);
