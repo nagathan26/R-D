@@ -7,20 +7,34 @@ class EmailService {
   }
 
   initTransporter() {
-    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
-      this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
-      });
-      console.log(`[EmailService] SMTP Transporter configured for ${process.env.SMTP_USER}.`);
+    const user = process.env.SMTP_USER;
+    const pass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, '') : '';
+
+    if (user && pass) {
+      if (process.env.SMTP_HOST && !process.env.SMTP_HOST.includes('gmail')) {
+        this.transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT) || 587,
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: { user, pass },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 15000
+        });
+      } else {
+        // Optimized for Gmail with SSL port 465, automatic space stripping for App Passwords, and strict socket timeouts
+        this.transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: { user, pass },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 15000
+        });
+      }
+      console.log(`[EmailService] SMTP Transporter configured for ${user}.`);
     } else {
       console.error('[EmailService] SMTP credentials not configured in .env! OTP emails will NOT be delivered.');
-      console.error('[EmailService] Set SMTP_HOST, SMTP_USER, SMTP_PASS in server/.env');
+      console.error('[EmailService] Set SMTP_USER and SMTP_PASS in server environment variables.');
       this.transporter = null;
     }
   }
