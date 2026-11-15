@@ -4,7 +4,12 @@ const mongoose = require('mongoose');
 const indiaRoutes = require('./routes/india.routes');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: [
+    'https://r-d-tan.vercel.app'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Indian Jurisdiction API Endpoints (v1)
