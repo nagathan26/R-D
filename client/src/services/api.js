@@ -14,6 +14,18 @@ const api = axios.create({
   timeout: 60000 // 60 seconds to allow Render free tier to wake up
 });
 
+// Request interceptor to automatically attach JWT token if available
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Response interceptor for unified error formatting (prevents [object Object])
 api.interceptors.response.use(
   (response) => response.data,

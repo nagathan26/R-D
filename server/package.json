@@ -9,9 +9,11 @@
     "test": "node node_modules/jest/bin/jest.js --runInBand --detectOpenHandles"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.9.5",
     "nodemailer": "^10.5.0"
   },

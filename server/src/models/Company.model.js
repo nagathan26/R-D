@@ -73,6 +73,23 @@ const CompanySchema = new mongoose.Schema(
     contactPhone: {
       type: String,
       trim: true
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'UserIndia',
+      index: true
+    },
+    authorizedRepresentatives: [{
+      name: { type: String, trim: true },
+      email: { type: String, lowercase: true, trim: true },
+      phone: { type: String, trim: true },
+      designation: { type: String, trim: true }
+    }],
+    charteredAccountant: {
+      caName: { type: String, trim: true },
+      membershipNumber: { type: String, trim: true },
+      firmName: { type: String, trim: true },
+      caEmail: { type: String, lowercase: true, trim: true }
     }
   },
   { timestamps: true }

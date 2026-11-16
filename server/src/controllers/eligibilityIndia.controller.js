@@ -94,7 +94,8 @@ exports.screenIndiaEligibility = async (req, res, next) => {
             industrySector,
             headcount: Number(headcount || 1),
             contactEmail: contactEmail.toLowerCase().trim(),
-            contactPhone
+            contactPhone,
+            userId: req.user ? req.user._id : undefined
           });
         } else {
           // Update basic details if changed
@@ -102,7 +103,13 @@ exports.screenIndiaEligibility = async (req, res, next) => {
           savedCompany.headcount = Number(headcount || savedCompany.headcount);
           savedCompany.hasRegisteredIndianPatents = Boolean(hasRegisteredIndianPatents);
           if (gstin) savedCompany.gstin = gstin.trim().toUpperCase();
+          if (req.user && !savedCompany.userId) savedCompany.userId = req.user._id;
           await savedCompany.save();
+        }
+
+        if (req.user && !req.user.companyId) {
+          req.user.companyId = savedCompany._id;
+          await req.user.save();
         }
 
         // Save Assessment record
@@ -152,6 +159,22 @@ exports.screenIndiaEligibility = async (req, res, next) => {
           hasDsirApprovedLab: Boolean(hasDsirApprovedLab),
           screeningResult
         });
+
+        // Trigger Notification if user is logged in
+        if (req.user) {
+          try {
+            const Notification = require('../models/Notification.model');
+            await Notification.create({
+              userId: req.user._id,
+              title: 'Eligibility Assessment Completed',
+              message: `Evaluated ${savedCompany.legalName}. Candidate for: ${targetIncentives.join(', ') || 'R&D grants'}. Estimated incentive: ${screeningResult.estimatedTaxSavingsInr?.formatted || 'calculated'}.`,
+              type: 'ASSESSMENT',
+              link: '/dashboard/assessments'
+            });
+          } catch (notifErr) {
+            // non-blocking
+          }
+        }
       }
     } catch (dbError) {
       console.warn(`[DB Persist Note]: ${dbError.message}`);

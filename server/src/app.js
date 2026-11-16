@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const indiaRoutes = require('./routes/india.routes');
+const authRoutes = require('./routes/auth.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
 
 const app = express();
 
@@ -10,7 +12,9 @@ app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     if (
-      origin.includes('vercel.app')
+      origin.includes('vercel.app') ||
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1')
     ) {
       return callback(null, true);
     }
@@ -29,6 +33,12 @@ app.get('/', (req, res) => {
     screener: '/api/v1/india/eligibility/screen'
   });
 });
+
+// Authentication & Customer Onboarding Endpoints (v1)
+app.use('/api/v1/auth', authRoutes);
+
+// Authenticated Customer SaaS Dashboard Endpoints (v1)
+app.use('/api/v1/dashboard', dashboardRoutes);
 
 // Indian Jurisdiction API Endpoints (v1)
 app.use('/api/v1/india', indiaRoutes);

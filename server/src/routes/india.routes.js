@@ -4,9 +4,10 @@ const router = express.Router();
 const eligibilityController = require('../controllers/eligibilityIndia.controller');
 const engagementController = require('../controllers/engagementIndia.controller');
 const ingestionController = require('../controllers/ingestionIndia.controller');
+const { optionalProtect } = require('../middleware/auth.middleware');
 
 // Module 1: Screener & Company Context
-router.post('/eligibility/screen', eligibilityController.screenIndiaEligibility);
+router.post('/eligibility/screen', optionalProtect, eligibilityController.screenIndiaEligibility);
 router.get('/company/:id', eligibilityController.getCompanyContext);
 
 // Module 2: Engagement, Nodemailer OTP & Execution
